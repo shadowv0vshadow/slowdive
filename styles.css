@@ -1,0 +1,365 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #121212;
+    color: #ffffff;
+}
+
+header {
+    padding: 20px;
+    background-color: #000000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+h1 {
+    margin-bottom: 10px;
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+}
+
+button {
+    padding: 8px 16px;
+    background-color: #1DB954;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #1ed760;
+}
+
+button:disabled {
+    background-color: #565656;
+    cursor: not-allowed;
+}
+
+.album-wall {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+    padding: 20px;
+}
+
+.album {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.album:hover {
+    transform: translateY(-10px) scale(1.05);
+    box-shadow: 0 12px 16px rgba(0, 0, 0, 0.3);
+    z-index: 2;
+}
+
+.album img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.album-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 10px;
+    opacity: 0;
+    backdrop-filter: blur(5px);
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+}
+
+.album:hover .album-info {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 模态窗口样式 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 10;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    overflow: auto;
+}
+
+.modal-content {
+    background-color: #282828;
+    margin: 5% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 900px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #fff;
+}
+
+.search-container {
+    display: flex;
+    margin: 20px 0;
+}
+
+#albumSearch {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 4px 0 0 4px;
+    background-color: #333;
+    color: white;
+}
+
+#searchBtn {
+    border-radius: 0 4px 4px 0;
+}
+
+.search-results, .album-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.search-item {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.search-item:hover {
+    transform: scale(1.05);
+}
+
+#saveCustomWall {
+    margin-top: 20px;
+    width: 100%;
+}
+
+/* 为不同尺寸的屏幕优化网格布局 */
+@media (max-width: 768px) {
+    .album-wall {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .album-wall {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+}
+
+/* 添加加载动画样式 */
+.loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    color: white;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #1DB954;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* 专辑详情模态窗口样式 */
+.album-details-modal {
+    display: flex;
+    position: fixed;
+    z-index: 20;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    justify-content: center;
+    align-items: center;
+}
+
+.album-details-content {
+    background: #282828;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 800px;
+    display: flex;
+    padding: 30px;
+    position: relative;
+}
+
+.close-details {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    cursor: pointer;
+    color: #aaa;
+}
+
+.close-details:hover {
+    color: white;
+}
+
+.album-cover {
+    flex: 0 0 40%;
+    margin-right: 30px;
+}
+
+.album-cover img {
+    width: 100%;
+    border-radius: 4px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.album-info-details {
+    flex: 1;
+}
+
+.album-info-details h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 24px;
+}
+
+.artist {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #aaa;
+}
+
+.douban-link a {
+    color: #1DB954;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.douban-link a:hover {
+    text-decoration: underline;
+}
+
+.add-to-wall {
+    margin-top: 30px;
+    padding: 10px 20px;
+    background: #1DB954;
+    border: none;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.add-to-wall:hover {
+    background: #1ed760;
+}
+
+@media (max-width: 768px) {
+    .album-details-content {
+        flex-direction: column;
+        padding: 20px;
+    }
+    
+    .album-cover {
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+}
+
+/* 添加洗牌动画相关样式 */
+@keyframes shuffle-out {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.3) rotate(10deg);
+    opacity: 0;
+  }
+}
+
+@keyframes shuffle-in {
+  0% {
+    transform: scale(0.3) rotate(-10deg);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.album.shuffle-out {
+  animation: shuffle-out 0.5s forwards;
+  transform-origin: center center;
+}
+
+.album.shuffle-in {
+  animation: shuffle-in 0.6s forwards;
+  transform-origin: center center;
+}
+
+/* 一些随机起始位置的类，用于增加随机感 */
+.pos1 { transform: translateY(-20px) scale(0.3); }
+.pos2 { transform: translateY(20px) scale(0.3); }
+.pos3 { transform: translateX(-20px) scale(0.3); }
+.pos4 { transform: translateX(20px) scale(0.3); }
+.pos5 { transform: translateX(-15px) translateY(-15px) scale(0.3); }
+.pos6 { transform: translateX(15px) translateY(15px) scale(0.3); }
+.rot1 { transform: rotate(-5deg) scale(0.3); }
+.rot2 { transform: rotate(5deg) scale(0.3); }
+.rot3 { transform: rotate(-10deg) scale(0.3); }
+.rot4 { transform: rotate(10deg) scale(0.3); }
+
+/* 禁用按钮的样式 */
+.disable-interaction {
+  pointer-events: none;
+  opacity: 0.7;
+} 

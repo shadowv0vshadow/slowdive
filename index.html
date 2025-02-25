@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音乐专辑海报墙</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>音乐专辑海报墙</h1>
+        <div class="controls">
+            <button id="randomize">随机专辑</button>
+            <button id="customize">自定义海报墙</button>
+            <button id="share" disabled>分享我的墙</button>
+        </div>
+    </header>
+    
+    <main class="album-wall" id="albumWall">
+        <!-- 专辑封面将在这里动态加载 -->
+    </main>
+
+    <div id="customizeModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>自定义你的海报墙</h2>
+            <div class="search-container">
+                <input type="text" id="albumSearch" placeholder="搜索专辑或艺术家...">
+                <button id="searchBtn">搜索</button>
+            </div>
+            <div id="searchResults" class="search-results">
+                <!-- 搜索结果将显示在这里 -->
+            </div>
+            <div class="selected-albums">
+                <h3>已选择的专辑</h3>
+                <div id="selectedAlbums" class="album-grid">
+                    <!-- 已选择的专辑将显示在这里 -->
+                </div>
+                <button id="saveCustomWall">保存我的海报墙</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
