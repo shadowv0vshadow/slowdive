@@ -22,7 +22,23 @@ export function useAlbums() {
         const data = await response.json();
         console.log(`成功加载 ${data.length} 张专辑`);
         setAlbums(data);
-        setCurrentAlbums(shuffleArray(data)); // 不限制专辑数量
+        
+        // 尝试从URL加载专辑
+        const urlParams = new URLSearchParams(window.location.search);
+        const albumParam = urlParams.get('albums');
+        
+        if (albumParam) {
+          const albumIds = albumParam.split(',').map(id => parseInt(id));
+          const albumsToLoad = data.filter(album => albumIds.includes(album.id));
+          
+          if (albumsToLoad.length > 0) {
+            setCurrentAlbums(albumsToLoad);
+          } else {
+            setCurrentAlbums(shuffleArray(data));
+          }
+        } else {
+          setCurrentAlbums(shuffleArray(data)); // 不限制专辑数量
+        }
       } catch (err) {
         console.error('加载专辑数据错误:', err);
         setError(err instanceof Error ? err : new Error('未知错误'));

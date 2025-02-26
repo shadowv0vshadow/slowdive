@@ -17,6 +17,29 @@ export function AlbumGrid({ albums, isShuffling = false }: AlbumGridProps) {
   // 展示所有专辑，不再计算最佳数量
   const displayAlbums = albums;
 
+  const shareWall = () => {
+    const albumIds = displayAlbums.map(album => album.id).join(',');
+    const shareUrl = `${window.location.origin}?albums=${albumIds}`;
+    
+    // 检查Clipboard API是否可用
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(shareUrl)
+        .then(() => {
+          // setIsShared(true);
+          setTimeout(() => {
+            // setIsShared(false);
+          }, 2000);
+        })
+        .catch(err => {
+          console.error('复制链接失败: ', err);
+          alert('分享链接: ' + shareUrl);
+        });
+    } else {
+      // 如果Clipboard API不可用，使用prompt
+      alert('请手动复制以下链接:\n' + shareUrl);
+    }
+  };
+
   return (
     <>
       <div 

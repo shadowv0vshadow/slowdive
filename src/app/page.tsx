@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { AlbumGrid } from '@/components/album-grid'
 import { useAlbums } from '@/hooks/use-albums'
 import { SlowdiveLogo } from '@/components/slowdive-logo'
+import { CustomizeModal } from '@/components/customize-modal'
 
 export default function Home() {
   const {
@@ -15,6 +16,8 @@ export default function Home() {
   } = useAlbums()
   
   const [isShuffling, setIsShuffling] = useState(false)
+  const [isCustomizeModalOpen, setIsCustomizeModalOpen] = useState(false)
+  const [isShared, setIsShared] = useState(false)
 
   const triggerShuffle = () => {
     if (isShuffling) return; // 防止重复触发
@@ -32,11 +35,19 @@ export default function Home() {
     }, 300);
   }
 
-  if (loading) {
-    return <div className="h-screen flex items-center justify-center">
-      <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-      <p className="ml-4">正在加载专辑...</p>
-    </div>
+  const shareWall = () => {
+    const albumIds = currentAlbums.map(album => album.id).join(',');
+    const shareUrl = `${window.location.origin}?albums=${albumIds}`;
+    
+    navigator.clipboard.writeText(shareUrl)
+      .then(() => {
+        setIsShared(true);
+        setTimeout(() => setIsShared(false), 2000);
+      })
+      .catch(err => {
+        console.error('复制链接失败: ', err);
+        alert('分享链接: ' + shareUrl);
+      });
   }
 
   if (error) {
@@ -54,8 +65,22 @@ export default function Home() {
       overflowY: 'auto',
       display: 'flex',
       flexDirection: 'column',
-      position: 'relative'
+      position: 'relative',
+      msOverflowStyle: 'none', /* IE and Edge */
+      scrollbarWidth: 'none',  /* Firefox */
     }}>
+      <style jsx global>{`
+        body::-webkit-scrollbar {
+          display: none;
+        }
+        main::-webkit-scrollbar {
+          display: none;
+        }
+        div::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
+
       <header style={{
         backgroundColor: 'rgba(0,0,0,0.5)',
         backdropFilter: 'blur(5px)',
@@ -74,39 +99,6 @@ export default function Home() {
         zIndex: 30,
       }}>
         <SlowdiveLogo />
-        
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <button
-            onClick={triggerShuffle}
-            disabled={isShuffling}
-            style={{
-              padding: '6px 12px',
-              fontSize: '14px',
-              backgroundColor: 'rgba(16,185,129,0.8)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: isShuffling ? 'not-allowed' : 'pointer',
-              opacity: isShuffling ? 0.5 : 1
-            }}
-          >
-            随机专辑
-          </button>
-          <button
-            onClick={() => window.location.href = '/customize'}
-            style={{
-              padding: '6px 12px',
-              fontSize: '14px',
-              backgroundColor: 'rgba(37,99,235,0.8)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
-          >
-            自定义海报墙
-          </button>
-        </div>
       </header>
 
       <div style={{ 
@@ -154,11 +146,11 @@ export default function Home() {
         >
           🔄
         </motion.button>
-        
+
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => window.location.href = '/customize'}
+          onClick={() => setIsCustomizeModalOpen(true)}
           style={{
             width: '50px',
             height: '50px',
@@ -176,7 +168,68 @@ export default function Home() {
         >
           ⚙️
         </motion.button>
+
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={shareWall}
+          disabled={currentAlbums.length === 0}
+          style={{
+            width: '50px',
+            height: '50px',
+            borderRadius: '50%',
+            backgroundColor: '#8b5cf6',
+            color: 'white',
+            border: 'none',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            opacity: currentAlbums.length === 0 ? 0.5 : 1
+          }}
+          title="分享我的墙"
+        >
+          📤
+        </motion.button>
       </div>
+
+      <div style={{
+        position: 'fixed',
+        left: '20px',
+        bottom: '20px', 
+        fontSize: '12px',
+        color: 'rgba(255,255,255,0.4)',
+        maxWidth: '200px',
+        lineHeight: 1.4
+      }}>
+        提示: 点击右下角齿轮图标可自定义海报墙
+      </div>
+
+      <CustomizeModal 
+        isOpen={isCustomizeModalOpen} 
+        onClose={() => setIsCustomizeModalOpen(false)} 
+      />
+
+      {isShared && (
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          style={{
+            position: 'fixed',
+            bottom: '80px',
+            right: '20px',
+            backgroundColor: 'rgba(139, 92, 246, 0.9)',
+            color: 'white',
+            padding: '10px 15px',
+            borderRadius: '4px',
+            zIndex: 40
+          }}
+        >
+          链接已复制到剪贴板！
+        </motion.div>
+      )}
     </main>
   )
 } 
